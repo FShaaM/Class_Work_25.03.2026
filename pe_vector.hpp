@@ -1,6 +1,7 @@
 #ifndef PE_VECTOR_HPP
+
 #define PE_VECTOR_HPP
-#include <stddef>
+#include<cstddef>
 
 namespace zinoviev
 {
@@ -36,4 +37,11 @@ namespace zinoviev
 	{
 		return size_;
 	}
+
+	template <class T>
+  size_t zinoviev::Vector<T>::getSize() const noexcept
+  {
+	  return size_;
+  }
+
 #endif
