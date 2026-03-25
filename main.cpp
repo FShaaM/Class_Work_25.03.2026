@@ -21,19 +21,28 @@ bool test_Default_Vec_is_empty(const char** teastName)
 int main()
 {
 	using test_t = bool(*)(const char**);
+	using case_t = std::pair<test_t, const char*>;
 
-	test_t tests[] = {
-		test_Constract_and_Destract,
-		test_Default_Vec_is_empty
+	case_t tests[] = {
+		{test_Constract_and_Destract, "Vect must be default"},
+	    {test_Default_Vec_is_empty, "Defult Vector must be empty"}
 	};
 
+	size_t f = 0;
 	constexpr size_t count = sizeof(tests) / sizeof(test_t);
 	for (size_t i = 0; i < count; ++i)
 	{
 		const char* teastName = nullptr;
-		bool r = tests[i](&teastName);
+		bool r = tests[i].first(&teastName);
 
 		if (!r)
+		{
+			++f;
 			std::cout << "Error:" << teastName << "\n";
+			std::cout << "\t" << tests[i].second << "\n";
+		}
 	}
+
+	std::cout << "Summer:\n\t" << (count - f) << "\n";
+	std::cout << "Fail" << count << "total\n";
 }
