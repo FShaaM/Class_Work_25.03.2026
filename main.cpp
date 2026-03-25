@@ -7,26 +7,29 @@ using zinoviev::Vector;
 bool test_getSie(const char** teastName)
 {
 	*teastName = __func__;
-	Vector< int > v;
+	Vector< int > v(2ull, 5);
 	return !v.getSize();
 }
 
 bool test_Non_mempty(const char** teastName)
 {
-	return false;
+	*teastName = __func__;
+	Vector< int > v(2ull, 5);
+
+	return v.getSize() == 5;
 }
 
 bool test_Constract_and_Destract(const char** teastName)
 {
 	*teastName = __func__;
-	Vector< int > v;
+	Vector< int > v(2ull, 5);
 	return true;
 }
 
 bool test_Default_Vec_is_empty(const char** teastName)
 {
 	*teastName = __func__;
-	Vector< int > v;
+	Vector< int > v(2ull, 5);
 	return v.is_empty();
 }
 
