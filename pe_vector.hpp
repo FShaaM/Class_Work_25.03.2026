@@ -9,7 +9,7 @@ namespace zinoviev
 	{
 		Vector();
 		~Vector();
-		bool is_empty();
+		bool is_empty()const noexcept;
 
 
 	private:
@@ -31,5 +31,9 @@ namespace zinoviev
 		capasity_(0)
 	{}
 
-
+	template <class T>
+	bool zinoviev::Vector<T>::is_empty() const noexcept
+	{
+		return size_;
+	}
 #endif
