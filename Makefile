@@ -8,4 +8,6 @@ $(UNIT_TESTS): main.o
 	$(CXX) -o $@ $^
 
 clean:
-	$(RM) $(UNIT_TESTS) main.o $(DEPS)
+	-$(RM) $(UNIT_TESTS) main.o
+	@$(RM) $(DEPS)
+	
