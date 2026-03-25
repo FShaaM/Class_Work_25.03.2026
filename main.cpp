@@ -1,5 +1,6 @@
 #include<iostream>
 #include "pe_vector.hpp"
+#include<cstddef>
 
 using zinoviev::Vector;
 

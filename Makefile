@@ -1,4 +1,9 @@
 CXXFLAGS += -Wall -Wextra -Weffc++ -std=c++14
 
-pe_vector_tests: main.o
-	g++ -o $@ $^
+UNIT_TESTS = pe_vector_tests
+
+$(UNIT_TESTS): main.o
+	$(CXX) -o $@ $^
+
+clean:
+	$(RM) $(UNIT_TESTS) main.o
