@@ -3,6 +3,18 @@
 
 using zinoviev::Vector;
 
+bool test_getSie(const char** teastName)
+{
+	*teastName = __func__;
+	Vector< int > v;
+	return !v.getSize();
+}
+
+bool test_Non_mempty(const char** teastName)
+{
+	return false;
+}
+
 bool test_Constract_and_Destract(const char** teastName)
 {
 	*teastName = __func__;
@@ -25,7 +37,9 @@ int main()
 
 	case_t tests[] = {
 		{test_Constract_and_Destract, "Vect must be default"},
-	    {test_Default_Vec_is_empty, "Defult Vector must be empty"}
+	    {test_Default_Vec_is_empty, "Defult Vector must be empty"},
+		{test_getSie, "Size of empty vector must be 0"},
+		{test_Non_mempty, "Size of non-empty vector must be !0"}
 	};
 
 	size_t f = 0;
