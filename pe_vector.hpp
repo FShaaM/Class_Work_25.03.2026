@@ -10,6 +10,7 @@ namespace zinoviev
     {
         Vector();
         ~Vector();
+        Vector(const Vector< T >& r);
         Vector(size_t size, const T& val);
         explicit Vector(size_t size);
 
@@ -19,13 +20,27 @@ namespace zinoviev
         void push_back(const T& x);              // H.W. и тесты
         void pop_back();                       // H.W. и тесты
 
-        Vector<T>& operator=(const Vector<T>&) = delete;
+        T& operator[](size_t id) noexcept;
+        const T& operator[](size_t id) const noexcept;
+
+        T& at(size_t id);
+        const T& at(size_t id) const;
+
+        Vector<T>& operator=(const Vector<T>&);
 
     private:
         T* data_;
         size_t size_;
         size_t capasity_;
     };
+}
+
+template <class T>
+zinoviev::Vector<T>::Vector(const Vector< T >& r) :
+    Vector(r.getSize())
+{
+    for (size_t i = 0; i < r.getSize(); ++i)
+        data_[i] = r.data_[i];
 }
 
 template <class T>
@@ -116,5 +131,25 @@ void zinoviev::Vector<T>::pop_back()
     --size_;
     data_[size_].~T();
 }
+template <class T>
+T& zinoviev::Vector<T>::operator[](size_t id) noexcept
+{
+
+}
+
+template <class T>
+const T& zinoviev::Vector<T>::operator[](size_t id) const noexcept;
+
+template <class T>
+T& zinoviev::Vector<T>::at(size_t id)
+{
+    if (id < getSize())
+        return data_[id];
+
+    throw std::logic_error("id < size");
+}
+
+template <class T>
+const T& zinoviev::Vector<T>::at(size_t id) const;
 
 #endif

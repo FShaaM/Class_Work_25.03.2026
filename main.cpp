@@ -1,6 +1,7 @@
-#include<iostream>
+#include <iostream>
 #include "pe_vector.hpp"
-#include<cstddef>
+#include <cstddef>
+#include <cstring>
 
 using zinoviev::Vector;
 
@@ -57,6 +58,71 @@ bool test_pop_back(const char** teastName)
     return v.getSize() == 4;
 }
 
+bool test_at(const char** teastName)
+{
+    *teastName = __func__;
+    Vector< int > v;
+
+    v.push_back(1);
+
+    try
+    {
+        int& r = v.at(0);
+        return true;
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
+bool test_at_bad(const char** teastName)
+{
+    *teastName = __func__;
+    Vector< int > v;
+
+    try
+    {
+        v.at(1);
+        return false;
+    }
+    catch (std::out_of_range& e)
+    {
+        const char* text = e.what();
+        return std::strcmp("id out of range", text);
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
+bool test_Copy_construct(const char** teastName)
+{
+    *teastName = __func__;
+    Vector< int > v(5, 5);
+    Vector< int > r = v;
+
+    if (!v.is_empty() || !r.is_empty())
+        throw std::logic_error("vectors expected to be not empty");
+
+    bool isEqual = r.getSize() == v.getSize();
+    for (size_t i = 0; isEqual && i < v.getSize() ; ++i)
+    {
+        try
+        {
+            isEqual = v.at(i) == r.at(i);
+        }
+        catch (...)
+        {
+            return false;
+        }
+    }
+
+    return isEqual;
+}
+
+
 
 int main()
 {
@@ -69,7 +135,10 @@ int main()
       {test_getSie, "Size of empty vector must be 0"},
       {test_Non_mempty, "Size of non-empty vector must be !0"},
       {test_push_back, "Bad push_back"},
-      {test_pop_back, "Bad pop_back"}
+      {test_pop_back, "Bad pop_back"},
+      {test_at_bad, "id out of range"},
+      {test_at, "id good"},
+      {test_Copy_construct, "Elements isn't equal"}
     };
 
     size_t f = 0;
@@ -77,7 +146,17 @@ int main()
     for (size_t i = 0; i < count; ++i)
     {
         const char* teastName = nullptr;
-        bool r = tests[i].first(&teastName);
+        bool r = false;
+        try
+        {
+            r = tests[i].first(&teastName);
+        }
+        catch (const std::logic_error& e)
+        {
+            std::cout << "NOT RUN Fanction" << i << "\n";
+            std::cout << "NOT RUN " << tests[i].second << "\n";
+            continue;
+        }
 
         if (!r)
         {
