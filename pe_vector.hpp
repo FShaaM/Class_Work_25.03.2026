@@ -11,6 +11,7 @@ namespace zinoviev
         Vector();
         ~Vector();
         Vector(const Vector< T >& r);
+        Vector(const Vector< T >&& r) noexcept;
         Vector(size_t size, const T& val);
         explicit Vector(size_t size);
 
@@ -19,6 +20,7 @@ namespace zinoviev
 
         void push_back(const T& x);              // H.W. и тесты
         void pop_back();                       // H.W. и тесты
+        void push_front(const T& x);
 
         T& operator[](size_t id) noexcept;
         const T& operator[](size_t id) const noexcept;
@@ -26,7 +28,10 @@ namespace zinoviev
         T& at(size_t id);
         const T& at(size_t id) const;
 
-        Vector<T>& operator=(const Vector<T>&);
+        Vector<T>& operator=(const Vector< T >&);
+        Vector<T>& operator=(const Vector< T >&&) noexcept;
+
+        void swap(Vector< T >& rhs) noexcept;
 
     private:
         T* data_;
@@ -41,6 +46,15 @@ zinoviev::Vector<T>::Vector(const Vector< T >& r) :
 {
     for (size_t i = 0; i < r.getSize(); ++i)
         data_[i] = r.data_[i];
+}
+
+template <class T>
+zinoviev::Vector<T>::Vector(const Vector< T >&& rhs) noexcept :
+    data_(rhs.data_),
+    size_(rhs.size_),
+    capasity_(rhs.capasity_)
+{
+    rhs.data_ = nullptr;
 }
 
 template <class T>
@@ -132,6 +146,22 @@ void zinoviev::Vector<T>::pop_back()
     data_[size_].~T();
 }
 
+// черновая реализация
+template <class T>
+void zinoviev::Vector<T>::push_front(const T& x)                   //Copy-and-Swap обеспечивает строгую гарантию
+{
+    Vector< T > v(getSize() + 1);
+    v[0] = x;
+
+    for (size_t i = 1; i < v.getSize(); ++i)
+        v[i] = (*this)[i - 1];
+
+    swap(v);
+}
+
+
+
+
 // дописать тесты
 template <class T>
 T& zinoviev::Vector<T>::operator[](size_t id) noexcept
@@ -163,9 +193,35 @@ template <class T>
 const T& zinoviev::Vector<T>::at(size_t id) const
 {
     if (id < getSize())
-        return (*this).[id];
+        return (*this)[id];
 
     throw std::logic_error("id out of buond");
+}
+
+template <class T>
+zinoviev::Vector<T>& zinoviev::Vector<T>::operator=(const Vector< T >& rhs)
+{
+    Vector< T > cpy(rhs);
+    swap(cpy);
+
+    return *this;
+}
+
+template <class T>
+zinoviev::Vector<T>& zinoviev::Vector<T>::operator=(const Vector< T >&& rhs) noexcept
+{
+    Vector< T > cpy = std::move(rhs);
+    swap(cpy);
+    return *this;
+}
+
+
+template <class T>
+void zinoviev::Vector<T>::swap(Vector< T >& rhs) noexcept
+{
+    std::swap(data_, rhs.data_);
+    std::swap(size_, rhs.size_);
+    std::swap(capasity_, rhs.capasity_);
 }
 
 #endif
