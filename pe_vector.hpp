@@ -54,7 +54,7 @@ zinoviev::Vector<T>::Vector(const Vector< T >&& rhs) noexcept :
     size_(rhs.size_),
     capasity_(rhs.capasity_)
 {
-    rhs.data_ = nullptr;
+    rhs.data_ = nullptr; // остальные зануления делать ОШИБОЧНО, лучше сделать пустой вектор и обменять
 }
 
 template <class T>
@@ -201,6 +201,9 @@ const T& zinoviev::Vector<T>::at(size_t id) const
 template <class T>
 zinoviev::Vector<T>& zinoviev::Vector<T>::operator=(const Vector< T >& rhs)
 {
+    if (this == std::addressof(rhs))                   // без проверки меняет расположение в память
+        return *this;
+
     Vector< T > cpy(rhs);
     swap(cpy);
 
@@ -210,8 +213,11 @@ zinoviev::Vector<T>& zinoviev::Vector<T>::operator=(const Vector< T >& rhs)
 template <class T>
 zinoviev::Vector<T>& zinoviev::Vector<T>::operator=(const Vector< T >&& rhs) noexcept
 {
+    if (this == std::addressof(rhs))                   // а здесь не поменялось нечего с этой проверкой и без неё
+        return *this;
+
     Vector< T > cpy = std::move(rhs);
-    swap(cpy);
+    swap(cpy);                        // ОШИБОЧНО будет сразу в swap(...) писать rhs
     return *this;
 }
 
