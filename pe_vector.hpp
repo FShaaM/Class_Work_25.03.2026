@@ -131,25 +131,41 @@ void zinoviev::Vector<T>::pop_back()
     --size_;
     data_[size_].~T();
 }
+
+// дописать тесты
 template <class T>
 T& zinoviev::Vector<T>::operator[](size_t id) noexcept
 {
+    const Vector< T >* cthis = this;
+    const T& cr = (*cthis)[id];
+    T& r = const_cast<T&>(cr);
+    return r;
 
+    // return const_cast<T&>((*static_cast< const Vector< T >* >(this))[id]);
 }
 
 template <class T>
-const T& zinoviev::Vector<T>::operator[](size_t id) const noexcept;
+const T& zinoviev::Vector<T>::operator[](size_t id) const noexcept
+{
+    return data_[id];
+}
 
 template <class T>
 T& zinoviev::Vector<T>::at(size_t id)
 {
-    if (id < getSize())
-        return data_[id];
-
-    throw std::logic_error("id < size");
+    const Vector< T >* cthis = this;
+    const T& cr = cthis->at(id);
+    T& r = const_cast<T&>(cr);
+    return r;
 }
 
 template <class T>
-const T& zinoviev::Vector<T>::at(size_t id) const;
+const T& zinoviev::Vector<T>::at(size_t id) const
+{
+    if (id < getSize())
+        return (*this).[id];
+
+    throw std::logic_error("id out of buond");
+}
 
 #endif

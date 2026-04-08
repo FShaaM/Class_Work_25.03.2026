@@ -68,7 +68,27 @@ bool test_at(const char** teastName)
     try
     {
         int& r = v.at(0);
-        return true;
+        return r == 1;
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
+bool test_cost_at(const char** teastName)
+{
+    *teastName = __func__;
+    Vector< int > v;
+
+    v.push_back(1);
+
+    const Vector< int >& yav = v;
+
+    try
+    {
+        const int& r = yav.at(0);
+        return r == 1;
     }
     catch (...)
     {
@@ -96,6 +116,28 @@ bool test_at_bad(const char** teastName)
         return false;
     }
 }
+
+bool test_const_at_bad(const char** teastName)
+{
+    *teastName = __func__;
+    const Vector< int > v;
+
+    try
+    {
+        v.at(1);
+        return false;
+    }
+    catch (std::out_of_range& e)
+    {
+        const char* text = e.what();
+        return std::strcmp("id out of range", text);
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
 
 bool test_Copy_construct(const char** teastName)
 {
@@ -137,8 +179,10 @@ int main()
       {test_push_back, "Bad push_back"},
       {test_pop_back, "Bad pop_back"},
       {test_at_bad, "id out of range"},
-      {test_at, "id good"},
-      {test_Copy_construct, "Elements isn't equal"}
+      {test_at, "id isn't good"},
+      {test_Copy_construct, "Elements isn't equal"},
+      {test_cost_at, "Bad reading in vector"},
+      {test_const_at_bad, "Bad, bad, bad is good"}
     };
 
     size_t f = 0;
