@@ -11,7 +11,7 @@
 namespace zinoviev
 {
     template <class T>
-    struct Vector                    // ещё бы добавить методы по размерам с капасити
+    struct Vector
     {
         Vector();
         ~Vector();
