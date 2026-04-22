@@ -10,4 +10,3 @@ $(UNIT_TESTS): main.o
 clean:
 	-$(RM) $(UNIT_TESTS) main.o
 	@$(RM) $(DEPS)
-	
