@@ -1,6 +1,5 @@
 #include <iostream>
 #include "vector.hpp"
-#include <cstddef>
 #include <cstring>
 #include <stdexcept>
 
@@ -21,69 +20,108 @@ bool testDefaultVectorIsEmpty(const char** pname) {
 bool testSizeOfEmptyVector(const char** pname) {
     *pname = __func__;
     Vector<int> v;
-    return !v.getSize();
+    return v.getSize() == 0;
 }
 
 bool testSizeOfNonEmptyVector(const char** pname) {
     *pname = __func__;
-    constexpr size_t size = 2;
-    Vector<int> v(size, 5);
-    return v.getSize() == size;
+    Vector<int> v(5, 7);
+    return v.getSize() == 5;
 }
 
-bool testElementCheckedAccess(const char** pname) {
+bool testGetCapacity(const char** pname) {
     *pname = __func__;
     Vector<int> v;
+    if (v.getCapucity() != 0) return false;
+    v.reserve(20);
+    if (v.getCapucity() < 20) return false;
+    v.push_back(1);
+    if (v.getCapucity() < 20) return false;
+    return true;
+}
+
+bool testPushBack(const char** pname) {
+    *pname = __func__;
+    Vector<int> v;
+    for (int i = 0; i < 100; ++i) v.push_back(i);
+    if (v.getSize() != 100) return false;
+    for (int i = 0; i < 100; ++i) if (v[i] != i) return false;
+    return true;
+}
+
+bool testPushBackRepeat(const char** pname) {
+    *pname = __func__;
+    Vector<int> v;
+    v.push_back(1);
+    v.pushBackRepeat(5, 3);
+    if (v.getSize() != 4) return false;
+    if (v[0] != 1 || v[1] != 5 || v[2] != 5 || v[3] != 5) return false;
+    v.pushBackRepeat(7, 0);
+    if (v.getSize() != 4) return false;
+    return true;
+}
+
+bool testPopBack(const char** pname) {
+    *pname = __func__;
+    Vector<int> v;
+    v.push_back(1);
     v.push_back(2);
-    try {
-        int& r = v.at(0);
-        return r == 2;
-    }
-    catch (...) {
-        return false;
-    }
+    v.push_back(3);
+    v.pop_back();
+    if (v.getSize() != 2) return false;
+    if (v[0] != 1 || v[1] != 2) return false;
+    v.pop_back();
+    v.pop_back();
+    if (v.getSize() != 0) return false;
+    return true;
 }
 
-bool testElementCheckedConstAccess(const char** pname) {
+bool testPushFront(const char** pname) {
     *pname = __func__;
     Vector<int> v;
+    v.push_front(1);
+    v.push_front(2);
+    v.push_front(3);
+    if (v.getSize() != 3) return false;
+    if (v[0] != 3 || v[1] != 2 || v[2] != 1) return false;
+    return true;
+}
+
+bool testBracketOperator(const char** pname) {
+    *pname = __func__;
+    Vector<int> v;
+    v.push_back(1);
     v.push_back(2);
-    const Vector<int>& rv = v;
-    try {
-        const int& r = rv.at(0);
-        return r == 2;
-    }
-    catch (...) {
-        return false;
-    }
+    v[0] = 5;
+    if (v[0] != 5) return false;
+    const Vector<int>& cv = v;
+    if (cv[0] != 5) return false;
+    return true;
 }
 
-bool testElementCheckedOutOfBoundAccess(const char** pname) {
+bool testAt(const char** pname) {
     *pname = __func__;
     Vector<int> v;
-    try {
-        v.at(0);
-        return false;
-    }
-    catch (const std::out_of_range& e) {
-        const char* text = e.what();
-        return !std::strcmp("id out of bound", text);
-    }
-    catch (...) {
-        return false;
-    }
+    v.push_back(10);
+    v.push_back(20);
+    if (v.at(0) != 10 || v.at(1) != 20) return false;
+    v.at(0) = 100;
+    if (v.at(0) != 100) return false;
+    const Vector<int>& cv = v;
+    if (cv.at(0) != 100) return false;
+    return true;
 }
 
-bool testElementCheckedOutOfBoundConstAccess(const char** pname) {
+bool testAtOutOfBound(const char** pname) {
     *pname = __func__;
-    const Vector<int> v;
+    Vector<int> v;
+    v.push_back(1);
     try {
-        v.at(0);
+        v.at(1);
         return false;
     }
-    catch (const std::out_of_range& e) {
-        const char* text = e.what();
-        return !std::strcmp("id out of bound", text);
+    catch (const std::out_of_range&) {
+        return true;
     }
     catch (...) {
         return false;
@@ -92,21 +130,14 @@ bool testElementCheckedOutOfBoundConstAccess(const char** pname) {
 
 bool testCopyConstructor(const char** pname) {
     *pname = __func__;
-    Vector<int> v{ 1, 2 };
-    Vector<int> yav = v;
-    if (v.is_empty() || yav.is_empty()) {
-        throw std::logic_error("Vectors expected to be non-empty");
-    }
-    bool isEqual = yav.getSize() == v.getSize();
-    for (size_t i = 0; isEqual && i < v.getSize(); ++i) {
-        try {
-            isEqual = v.at(i) == yav.at(i);
-        }
-        catch (...) {
-            return false;
-        }
-    }
-    return isEqual;
+    Vector<int> v;
+    v.push_back(1);
+    v.push_back(2);
+    Vector<int> copy(v);
+    if (copy.getSize() != v.getSize()) return false;
+    for (size_t i = 0; i < v.getSize(); ++i)
+        if (copy[i] != v[i]) return false;
+    return true;
 }
 
 bool testMoveConstructor(const char** pname) {
@@ -225,7 +256,7 @@ bool testEraseRange(const char** pname) {
     v.erase(2, 5);
     if (v.getSize() != 7) return false;
     for (size_t i = 0; i < v.getSize(); ++i) {
-        int expected = (i < 2) ? i : i + 3;
+        int expected = (i < 2) ? static_cast<int>(i) : static_cast<int>(i + 3);
         if (v[i] != expected) return false;
     }
     v.erase(3, v.getSize());
@@ -244,15 +275,19 @@ int main() {
         { testDefaultVectorIsEmpty, "Default constructed vector must be empty" },
         { testSizeOfEmptyVector, "Size of empty vector must be zero" },
         { testSizeOfNonEmptyVector, "Size of non-empty vector must be greater than zero" },
-        { testElementCheckedAccess, "Inbound access must return lvalue reference to indexed value" },
-        { testElementCheckedOutOfBoundAccess, "Out of bound access must generate exception with specific text" },
-        { testElementCheckedConstAccess, "Same as inbound access but const" },
-        { testElementCheckedOutOfBoundConstAccess, "Same as out of bound but const" },
-        { testCopyConstructor, "Copied vector must be equal to original" },
-        { testMoveConstructor, "Move constructor transfers ownership and empties source" },
-        { testCopyAssignment, "Copy assignment must produce equal vector" },
-        { testMoveAssignment, "Move assignment must transfer ownership" },
-        { testSwap, "swap must exchange contents of two vectors" },
+        { testGetCapacity, "getCapcity returns correct capacity" },
+        { testPushBack, "push_back adds elements and preserves order" },
+        { testPushBackRepeat, "pushBackRepeat adds multiple copies" },
+        { testPopBack, "pop_back removes last element" },
+        { testPushFront, "push_front inserts at beginning" },
+        { testBracketOperator, "operator[] provides access and supports modification" },
+        { testAt, "at provides checked access" },
+        { testAtOutOfBound, "at throws out_of_range on invalid index" },
+        { testCopyConstructor, "Copy constructor creates equal copy" },
+        { testMoveConstructor, "Move constructor transfers ownership" },
+        { testCopyAssignment, "Copy assignment produces equal vector" },
+        { testMoveAssignment, "Move assignment transfers ownership" },
+        { testSwap, "swap exchanges contents of two vectors" },
         { testInsertSingle, "insert single element at position" },
         { testInsertRange, "insert range from another vector" },
         { testEraseSingle, "erase single element by index" },

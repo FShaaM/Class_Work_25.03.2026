@@ -11,12 +11,12 @@
 namespace zinoviev
 {
     template <class T>
-    struct Vector
+    struct Vector                    // ещё бы добавить методы по размерам с капасити
     {
         Vector();
         ~Vector();
         Vector(const Vector< T >& r);
-        Vector(const Vector< T >&& r) noexcept;
+        Vector(Vector< T >&& r) noexcept;
         Vector(size_t size, const T& val);
         explicit Vector(size_t size);
 
@@ -26,8 +26,9 @@ namespace zinoviev
         void reserve(size_t cap);
 
 
-        void push_back(const T& x);              // H.W. и тесты
-        void pop_back();                       // H.W. и тесты
+        void push_back(const T& x);
+        void pushBackRepeat(const T& x, size_t k);
+        void pop_back();
         void push_front(const T& x);
 
         void insert(size_t id, const T& t);
@@ -205,7 +206,7 @@ zinoviev::Vector<T>::Vector(const Vector< T >& r) :
 }
 
 template <class T>
-zinoviev::Vector<T>::Vector(const Vector< T >&& rhs) noexcept :
+zinoviev::Vector<T>::Vector(Vector< T >&& rhs) noexcept :
     data_(rhs.data_),
     size_(rhs.size_),
     capacity_(rhs.capacity_)
@@ -329,6 +330,29 @@ void zinoviev::Vector<T>::push_back(const T& x)
     {
         new (data_ + size_) T(x);
         ++size_;
+    }
+}
+
+template <class T>
+void zinoviev::Vector<T>::pushBackRepeat(const T& x, size_t k)
+{
+    if (k == 0) return;
+
+    size_t new_size = size_ + k;
+    reserve(new_size);
+
+    size_t i = 0;
+    try
+    {
+        for (; i < k; ++i)
+            new (data_ + size_ + i) T(x);
+        size_ = new_size;
+    }
+    catch (...)
+    {
+        for (size_t j = 0; j < i; ++j)
+            (data_ + size_ + j)->~T();
+        throw;
     }
 }
 
